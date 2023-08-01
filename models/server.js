@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors'); // CORS (Cross-Origin Resource Sharing): Protege endpoints para que sea accesible un endpoint desde cualquier recurso o ciertos recursos en especifico
 
+const { dbConnection } = require('../database/config');
+
 class Server {
 
     constructor() {
@@ -8,11 +10,20 @@ class Server {
         this.port = process.env.PORT;
         this.usuariosPath = '/api/usuarios';
 
+        // Conectar a BD
+        this.conectarDB();
+
         // Middlewares: Funcionalidades adicionales previo a carga de rutas
+        // Los middlewares en Express son funciones que tienen acceso a los objetos req (solicitud) y res (respuesta), y también pueden acceder a la función next, que se utiliza para pasar el control al siguiente middleware en la cadena de ejecución o a la ruta final que manejará la solicitud.
         this.middlewares();
 
         // Rutas de la aplicacion
         this.routes(); // Se llaman las rutas
+    }
+
+    async conectarDB() {
+        // Aqui se puede leer .env de produccion o development
+        await dbConnection();
     }
 
     middlewares() {
