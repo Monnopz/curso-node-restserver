@@ -88,12 +88,18 @@ const usuariosDelete = async (req, res = response) => {
     
     const { id } = req.params;
 
+    // const uid = req.uid; // No se desestructura porque para llegar aqui se tuvo que pasar la validacion del jwt y se da por hecho que siempre tendrá un valor ya en este punto
+
     // Eliminado fisicamente
     // const usuario = await Usuario.findByIdAndDelete(id);
 
     // Cambiando el estado, buena practica
     const usuario = await Usuario.findByIdAndUpdate(id, { estado: false }, {new: true});
-    
+    const usuarioAutenticado = req.usuario; // El usuario que se obtuvo en validar-jwt.js ( y viene con todas las propiedades de mongo db)
+
+    // Obtencion del usuario autenticado
+
+
     res.status(200).json({
         usuario
     });

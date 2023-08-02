@@ -9,6 +9,7 @@ class Server {
         this.app = express(); // Se crea una app de express (Webserver)
         this.port = process.env.PORT;
         this.usuariosPath = '/api/usuarios';
+        this.authPath = '/api/auth'; // Ruta de autenticacion
 
         // Conectar a BD
         this.conectarDB();
@@ -41,6 +42,7 @@ class Server {
 
     routes() {
         
+        this.app.use(this.authPath, require('../routes/auth'));
         this.app.use(this.usuariosPath, require('../routes/usuarios')); // Middleware para cargar las rutas
 
     }

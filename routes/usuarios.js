@@ -3,7 +3,11 @@ const { isValidObjectId } = require('mongoose');
 const { check, query } = require('express-validator');
 
 const { usuariosGet, usuariosPut, usuariosPost, usuariosDelete, usuariosPatch } = require('../controllers/usuarios');
-const { validarCampos } = require('../middlewares/validar-campos');
+const {
+    validarCampos,
+    validarJWT,
+    tieneRol,
+} = require('../middlewares'); // Por eso le pusimos index.js al archivo que unifica todos los middlewares para no tener que especificar en la ruta el index.js. Esto se puede hacer debido a que asi se comporta la sintaxis de los proyectos .js, .html, etc
 const { esRolValido, emailExiste, existeUsuarioPorId } = require('../helpers/db-validators');
 
 const router = Router(); // A este router es al que se le configuran las rutas
@@ -18,6 +22,7 @@ const router = Router(); // A este router es al que se le configuran las rutas
 // usuarios/10, el 10 se le conoce como parametro de segmento. Muy utilizado para obtener informacion
 // usuarios?estequery=10, ?estequery es un query param. Muy utilizado en paginacion. Los query params son considerados opcionales
 // para concatenar query params es con amperson &
+// los middlewares del router tienen que ser una función para que el router pueda manejarlos
 router.get('/', [
     //El metodo query obtiene los query params pasados en la url
     query('desde', 'El valor de desde debe ser numérico').isNumeric().optional(),
@@ -39,6 +44,11 @@ router.post('/', [
     validarCampos // Este middleware revisa los errores de cada uno de los checks anteriores. Por eso se pone este hasta el final. Los datos pasan por referencia. Es el que retorna la respuesta de error en caso de que haya algun error.
 ], usuariosPost); // El arreglo es un array de handlers o middlewares. Si  algo sale mal, se almacenan los errores en este punto y se pueden manejar en el codigo del post (usuarios controllers)
 router.delete('/:id', [
+    //Protección de rutas
+    // Se acostumbra que el token de acceso vaya en los headers de la peticion
+    validarJWT, // Middleware de autenticacion,
+    // esAdminRol, // Middleware de verificación de roles administrativos (lo fuerza)
+    tieneRol('ADMIN_ROLE', 'VENTAS_ROLE'), // Middleware de verificación de roles, mas flexible, dinamico. Se le manda la lista de roles que DEBEN de existir
     check('id', 'No es un ID válido').isMongoId().if(isValidObjectId).custom( existeUsuarioPorId ), // Se toma el id y se manda por referencia a la funcion existeUsuarioPorId
     validarCampos
 ], usuariosDelete);
