@@ -3,9 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acceso Denegado</title>
+    <title>Google SignIn</title>
 </head>
 <body>
-    <h1>Acceso Denegado</h1>
+    <h1>Google SignIn</h1>
+    <!-- data-auto_prompt="false"; si se deja diferente de false se le pide la autenticacion al usuario justo al entrar a la aplicacion -->
+    <!-- data-callback="handleCredentialResponse"; la funcion que se llama cuando la autenticacion es exitosa -->
+    <div id="g_id_onload"
+         data-client_id="193541651749-j0bd84cd2aiimlbcihr3e8pom7bv2tkc.apps.googleusercontent.com"
+         data-callback="handleCredentialResponse"
+         data-auto_prompt="false">
+    </div>
+    <div class="g_id_signin"
+         data-type="standard"
+         data-size="large"
+         data-theme="outline"
+         data-text="sign_in_with"
+         data-shape="rectangular"
+         data-logo_alignment="left">
+    </div>
+    <button id="google_signout">SignOut</button>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script>
+        function handleCredentialResponse(response) {
+            // Esta funcion de google no funciona con una de flecha
+            //Google Token: ID_TOKEN
+            // console.log('id token', response.credential);
+
+            const body = { id_token: response.credential };
+
+            fetch('http://localhost:8080/api/auth/google', {
+                method: 'POST',
+                headers: {
+                    'Content-Type':'application/json'
+                },
+                body: JSON.stringify(body)
+            }) // Con fetch se serializa la respuesta
+                .then( resp => resp.json() ) // Readable Stream se serializa
+                .then( resp => { // Respuesta serializada
+                    localStorage.setItem('correo', resp.usuario.correo);
+                    console.log(resp);
+                })
+                .catch(console.warn);
+        }
+
+        const button = document.getElementById('google_signout');
+        button.onclick = function() {
+            google.accounts.id.disableAutoSelect();
+            google.accounts.id.revoke( localStorage.getItem('correo'), done => {
+                localStorage.clear();
+                location.reload(); // Recargar la pagina
+            }) // Logout del usuario; 
+        }
+
+    </script>
 </body>
 </html>
