@@ -65,6 +65,7 @@ const googleSignIn = async( req = request, res = response ) => {
 
         if(!usuario) {
             // Crear al usuario si no existe
+            
             const data = {
                 nombre,
                 correo,
@@ -73,6 +74,11 @@ const googleSignIn = async( req = request, res = response ) => {
                 rol: 'USER_ROLE',
                 google: true
             };
+
+            // Encriptar la contraseña
+            const salt = bcryptjs.genSaltSync(); // El entero indica la cantidad de vueltas que dará el algrotimo para encriptar la contraseña. El valor por defecto es 10
+            const password = data.password;
+            data.password = bcryptjs.hashSync(password, salt); // Encriptar en una sola via
 
             usuario = new Usuario( data );
             await usuario.save();
