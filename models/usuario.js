@@ -34,7 +34,7 @@ const UsuarioSchema = new Schema({
 
 // Sobreescribiendo el metodo toJSON de Mongoose
 UsuarioSchema.methods.toJSON = function() {
-    const { __v, password, _id, ...user } = this.toObject(); // Genera la instancia como un objeto literal de Js y saca las propiedades
+    const { __v, password, _id, estado, ...user } = this.toObject(); // Genera la instancia como un objeto literal de Js y saca las propiedades
     const returnedObject = { uid: _id, ...user };
     user._id = _id;
     return returnedObject;

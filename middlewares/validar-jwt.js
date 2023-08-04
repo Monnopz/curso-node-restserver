@@ -20,6 +20,7 @@ const validarJWT = async ( req = request, res = response, next ) => {
         
         // TODO: Validar que el token que llega sea el del usuario y que hagan match. Usuario puede eliminarse a si mismo, Admin Usuario puede eliminar varios usuarios
 
+        //TODO: Validar que si se accede a una ruta y el token vención, hacer de nuevo la autenticacion o mandar excepcion de error
 
         // Leer el usuario en Mongo que corresponde al uid y guardarlo en la request
         const usuario = await Usuario.findById(uid);

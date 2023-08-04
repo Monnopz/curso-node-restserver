@@ -39,6 +39,8 @@ const login = async (req = request, res = response) => {
         // Se instala paquete jsonwebtoken
         const token = await generarJWT( usuario.id ); //Metodo manual creado por nosotros para aprovevhar la nomenclatura async/await
         
+        // TODO: Invalidar token anterior si se vuelve a loguear con un token previamente valido
+
         res.status(200).json({
             usuario,
             token
