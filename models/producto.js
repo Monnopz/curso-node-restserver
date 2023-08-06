@@ -22,6 +22,9 @@ const ProductoSchema = new Schema({
         type: Boolean,
         default: true
     },
+    img: {
+        type: String
+    },
     usuario: { // Relacion para saber que usuario creo la categoria
         type: Schema.Types.ObjectId,
         ref: 'Usuario', // Asi como se pone aquí asi debe apuntar el archivo original de Schema usuario.js (model('Usuario', UsuarioSchema))
