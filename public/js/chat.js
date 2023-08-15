@@ -5,7 +5,7 @@ const ulUsuarios = document.querySelector('#ulUsuarios');
 const ulMensajes = document.querySelector('#ulMensajes');
 const btnSalir = document.querySelector('#btnSalir');
 
-const url = ( window.location.hostname.includes('https') )
+const url = ( window.location.hostname.includes('railway') )
             ? 'https://curso-node-restserver-production-78f8.up.railway.app/api/auth'
             : 'http://localhost:8080/api/auth';
 
