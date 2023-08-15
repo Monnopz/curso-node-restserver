@@ -2,6 +2,7 @@
 // Debido a que el paquete jsonwebtoken trabaja con promesas .then
 // JWT (JSON Web Token):Se componen del header, payload y la firma. El header contiene informacion del algoritmo de encriptacion y el tipo de token. El payload contiene la info que queremos que contenga el token. La firma le permite a los verificadores del JWT verificar que es valido.
 const jwt = require('jsonwebtoken');
+const { Usuario } = require('../models');
 
 const generarJWT = ( uid = '' ) => {
     // El uid será lo unico que se grabe del usuario. POR SEGURIDAD
@@ -24,6 +25,32 @@ const generarJWT = ( uid = '' ) => {
 
 }
 
+// Funcion utilizada para validar el JWT en los sockets (sockets/controller.js)
+const comprobarJWT = async( token = '' ) => {
+
+    try {
+        
+        if(token.length < 11) { // Si no es un token valido (se puede medir por la longitud)
+            return null;
+        }
+
+        const { uid } = jwt.verify( token, process.env.SECRETORPRIVATEKEY );
+        const usuario = await Usuario.findOne({ _id: uid, estado: true });
+
+        if( usuario ) {
+            return usuario;
+        }
+        else {
+            return null;
+        }
+
+    } catch (error) {
+        return null;
+    }
+
+}
+
 module.exports = {
-    generarJWT
+    generarJWT,
+    comprobarJWT
 }

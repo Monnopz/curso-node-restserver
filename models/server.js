@@ -1,14 +1,20 @@
 const express = require('express');
 const cors = require('cors'); // CORS (Cross-Origin Resource Sharing): Protege endpoints para que sea accesible un endpoint desde cualquier recurso o ciertos recursos en especifico
 const fileUpload = require('express-fileupload'); // Se utiliza el paquete de npm express-fileupload para realizar la carga de archivos aprovechando la carga con express
+const { createServer } = require('http'); // Servidor http
+
 
 const { dbConnection } = require('../database/config');
+const { socketController } = require('../sockets/controller');
 
 class Server {
 
     constructor() {
         this.app = express(); // Se crea una app de express (Webserver)
         this.port = process.env.PORT;
+
+        this.server = createServer( this.app ); // Se crea el servidor http con la app de express. Este servidor es el que se escuchará (listen)
+        this.io = require('socket.io')(this.server); // Se crea el servidor de sockets y se da de alta con el server express
 
         this.paths = {
             auth: '/api/auth', // Ruta de autenticacion
@@ -28,6 +34,9 @@ class Server {
 
         // Rutas de la aplicacion
         this.routes(); // Se llaman las rutas
+
+        // Sockets
+        this.sockets();
     }
 
     async conectarDB() {
@@ -67,8 +76,14 @@ class Server {
 
     }
 
+    sockets() {
+
+        this.io.on('connection', (socket) => socketController(socket, this.io)); // sockets/controller.js
+
+    }
+
     listen() {
-        this.app.listen( this.port, () => {
+        this.server.listen( this.port, () => {
             console.log(`Servidor corriendo en el puerto ${this.port}`);
         });
     }

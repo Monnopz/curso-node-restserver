@@ -110,7 +110,25 @@ const googleSignIn = async( req = request, res = response ) => {
 
 }
 
+// Validar y renovar JWT
+const renovarToken = async( req = request, res = response ) => {
+
+    // A estas alturas ya hay algun usuario
+    // En POSTMAN, en los headers, poner x-token, para mandar un token personalizado
+
+    const { usuario } = req;
+
+    const token = await generarJWT( usuario.id ); //Metodo manual creado por nosotros para aprovevhar la nomenclatura async/await
+
+    res.status(201).json({
+        usuario,
+        token
+    });
+
+}
+
 module.exports = {
     login,
-    googleSignIn
+    googleSignIn,
+    renovarToken
 }
